@@ -30,11 +30,28 @@
                     <span>Dashboard</span>
                 </a>
                 <p class="nav-label nav-label-spaced">DIVISI HUMAN CAPITAL</p>
-                <a class="nav-link {{ request()->routeIs('recruitment') ? 'is-active' : '' }}" href="{{ route('recruitment') }}" @if(request()->routeIs('recruitment')) aria-current="page" @endif>
+                <a class="nav-link {{ request()->routeIs('recruitment.*') ? 'is-active' : '' }}" href="{{ route('recruitment.home') }}" @if(request()->routeIs('recruitment.*')) aria-current="page" @endif>
                     <x-icon name="users" />
                     <span>Recruitment</span>
-                    <x-icon name="chevron" class="nav-chevron" />
+                    <x-icon name="chevron" class="nav-chevron {{ request()->routeIs('recruitment.*') ? 'is-expanded' : '' }}" />
                 </a>
+                @if(request()->routeIs('recruitment.*'))
+                    <div class="nav-submenu">
+                        <a class="nav-submenu-parent {{ request()->routeIs('recruitment.letters') || (request()->routeIs('recruitment.*') && !request()->routeIs('recruitment.home')) ? 'is-current' : '' }}" href="{{ route('recruitment.letters') }}">Surat - Surat Rekrutmen</a>
+                        <div class="nav-submenu-children">
+                            <a class="{{ request()->routeIs('recruitment.applications.*') || request()->routeIs('recruitment.applications.permit') ? 'is-current' : '' }}" href="{{ route('recruitment.applications.index') }}">Input Pengajuan</a>
+                            <a class="{{ request()->routeIs('recruitment.print') && request()->route('type') === 'visitor-im' ? 'is-current' : '' }}" href="{{ route('recruitment.print', ['type' => 'visitor-im']) }}">Pengajuan Visitor (IM)</a>
+                            <a class="{{ request()->routeIs('recruitment.print') && request()->route('type') === 'psikotest' ? 'is-current' : '' }}" href="{{ route('recruitment.print', ['type' => 'psikotest']) }}">Psikotest</a>
+                            <a class="{{ request()->routeIs('recruitment.print') && request()->route('type') === 'tes-praktek' ? 'is-current' : '' }}" href="{{ route('recruitment.print', ['type' => 'tes-praktek']) }}">Tes Praktek</a>
+                            <a class="{{ request()->routeIs('recruitment.print') && request()->route('type') === 'refreshment' ? 'is-current' : '' }}" href="{{ route('recruitment.print', ['type' => 'refreshment']) }}">Refreshment</a>
+                            <a class="{{ request()->routeIs('recruitment.print') && request()->route('type') === 'ro' ? 'is-current' : '' }}" href="{{ route('recruitment.print', ['type' => 'ro']) }}">Pengajuan RO</a>
+                            <a class="{{ request()->routeIs('recruitment.ppe.*') ? 'is-current' : '' }}" href="{{ route('recruitment.ppe.index') }}">Input APD</a>
+                            <a class="{{ request()->routeIs('recruitment.print') && request()->route('type') === 'apd' ? 'is-current' : '' }}" href="{{ route('recruitment.print', ['type' => 'apd']) }}">Print APD</a>
+                            <a class="{{ request()->routeIs('recruitment.uniforms.*') ? 'is-current' : '' }}" href="{{ route('recruitment.uniforms.index') }}">Input Seragam</a>
+                            <a class="{{ request()->routeIs('recruitment.print') && request()->route('type') === 'seragam' ? 'is-current' : '' }}" href="{{ route('recruitment.print', ['type' => 'seragam']) }}">Print Seragam</a>
+                        </div>
+                    </div>
+                @endif
                 <a class="nav-link {{ request()->routeIs('people-development') ? 'is-active' : '' }}" href="{{ route('people-development') }}" @if(request()->routeIs('people-development')) aria-current="page" @endif>
                     <x-icon name="graduation" />
                     <span>People Development</span>
@@ -57,10 +74,22 @@
                 <div class="profile">
                     <span class="avatar">HC</span>
                     <span class="profile-copy">
-                        <strong>Human Capital</strong>
-                        <span>PT Putra Perkasa Abadi</span>
+                        @auth
+                            <strong>{{ auth()->user()->name }}</strong>
+                            <span>{{ auth()->user()->email }}</span>
+                        @else
+                            <strong>Human Capital</strong>
+                            <span>PT Putra Perkasa Abadi</span>
+                        @endauth
                     </span>
-                    <x-icon name="more" class="profile-more" />
+                    @auth
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button class="profile-logout" type="submit" aria-label="Keluar"><x-icon name="arrow-up-right" /></button>
+                        </form>
+                    @else
+                        <a class="profile-logout" href="{{ route('login') }}" aria-label="Masuk"><x-icon name="arrow-right" /></a>
+                    @endauth
                 </div>
                 <p class="sidebar-footnote">SITE BIB <span>•</span> INTERNAL PORTAL</p>
             </div>
@@ -82,6 +111,9 @@
                     <span class="topbar-date">{{ now()->locale('id')->translatedFormat('l, d F Y') }}</span>
                     <span class="topbar-divider"></span>
                     <span class="status-indicator"><i></i> Internal portal</span>
+                    @guest
+                        <a class="topbar-login" href="{{ route('login') }}">Masuk</a>
+                    @endguest
                     <span class="topbar-avatar">HC</span>
                 </div>
             </header>

@@ -35,7 +35,7 @@
     </section>
 
     <section class="division-grid" aria-label="Divisi Human Capital">
-        <a class="division-card card-blue" href="{{ route('recruitment') }}">
+        <a class="division-card card-blue" href="{{ route('recruitment.home') }}">
             <div class="card-topline"><span class="card-icon"><x-icon name="users" /></span><span class="card-number">01</span></div>
             <div class="card-body">
                 <span class="card-category">TALENT ACQUISITION</span>

@@ -26,3 +26,16 @@ sidebar?.querySelectorAll('a').forEach((link) => {
 window.addEventListener('resize', () => {
     if (window.innerWidth > 720) setSidebarOpen(false);
 });
+
+document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
+    toggle.addEventListener('click', () => {
+        const passwordInput = document.getElementById(toggle.getAttribute('aria-controls'));
+
+        if (!(passwordInput instanceof HTMLInputElement)) return;
+
+        const isVisible = passwordInput.type === 'password';
+        passwordInput.type = isVisible ? 'text' : 'password';
+        toggle.setAttribute('aria-pressed', String(isVisible));
+        toggle.setAttribute('aria-label', isVisible ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi');
+    });
+});

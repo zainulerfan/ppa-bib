@@ -1,22 +1,43 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Recruitment\RecruitmentApplicationController;
+use App\Http\Controllers\Recruitment\RecruitmentDocumentController;
+use App\Http\Controllers\Recruitment\RecruitmentPpeController;
+use App\Http\Controllers\Recruitment\RecruitmentUniformController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'dashboard')->name('dashboard');
 
-Route::view('/recruitment', 'divisions.show', [
-    'division' => [
-        'name' => 'Recruitment',
-        'short_name' => 'Recruitment',
-        'icon' => 'users',
-        'description' => 'Kelola proses pemenuhan tenaga kerja, mulai dari kebutuhan hingga kandidat bergabung.',
-        'scope' => [
-            ['title' => 'Perencanaan tenaga kerja', 'description' => 'Ruang untuk mencatat dan meninjau kebutuhan tenaga kerja.'],
-            ['title' => 'Seleksi kandidat', 'description' => 'Ruang untuk mengelola tahapan seleksi dan informasi kandidat.'],
-            ['title' => 'Administrasi onboarding', 'description' => 'Ruang untuk mempersiapkan proses awal karyawan bergabung.'],
-        ],
-    ],
-])->name('recruitment');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('throttle:5,1')->name('login.store');
+});
+
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth')->name('logout');
+
+Route::middleware('auth')->prefix('recruitment')->name('recruitment.')->group(function () {
+    Route::view('/', 'recruitment.index')->name('home');
+    Route::view('/surat-rekrutmen', 'recruitment.letters.index')->name('letters');
+
+    Route::get('/surat-rekrutmen/pengajuan/{application}/izin-visitor', [RecruitmentDocumentController::class, 'downloadPermit'])
+        ->name('applications.permit');
+    Route::resource('/surat-rekrutmen/pengajuan', RecruitmentApplicationController::class)
+        ->except('show')
+        ->names('applications')
+        ->parameters(['pengajuan' => 'application']);
+    Route::resource('/surat-rekrutmen/input-apd', RecruitmentPpeController::class)
+        ->except('show')
+        ->names('ppe')
+        ->parameters(['input-apd' => 'ppeRequest']);
+    Route::resource('/surat-rekrutmen/input-seragam', RecruitmentUniformController::class)
+        ->except('show')
+        ->names('uniforms')
+        ->parameters(['input-seragam' => 'uniformRequest']);
+    Route::get('/surat-rekrutmen/print/{type}/{record?}', [RecruitmentDocumentController::class, 'show'])
+        ->where('record', '[0-9]+')
+        ->name('print');
+});
 
 Route::view('/people-development', 'divisions.show', [
     'division' => [
