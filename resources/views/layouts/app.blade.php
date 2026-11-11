@@ -14,11 +14,11 @@
     <div class="app-shell">
         <button class="sidebar-backdrop" type="button" aria-label="Tutup menu" data-sidebar-close></button>
         <aside class="sidebar" id="main-sidebar" aria-label="Navigasi utama">
-            <a class="brand" href="{{ route('dashboard') }}" aria-label="HC PPA BIB, beranda">
-                <span class="brand-mark"><x-icon name="layers" /></span>
+            <a class="brand" href="{{ route('dashboard') }}" aria-label="Putra Perkasa Abadi, beranda">
+                <span class="brand-mark"><img src="{{ asset('images/ppa-logo.png') }}" alt="Logo PPA"></span>
                 <span class="brand-copy">
-                    <span class="brand-name">HC <strong>PPA BIB</strong></span>
-                    <span class="brand-caption">Human Capital Portal</span>
+                    <span class="brand-name">PUTRA PERKASA ABADI</span>
+                    <span class="brand-caption">HC PPA BIB <span aria-hidden="true">·</span> Site BIB</span>
                 </span>
             </a>
 

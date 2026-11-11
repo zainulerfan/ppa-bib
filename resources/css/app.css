@@ -47,12 +47,12 @@ button { color: inherit; }
     background: var(--navy);
 }
 .brand { display: flex; align-items: center; gap: 12px; padding: 0 8px; color: #f7f9ff; }
-.brand-mark { display: grid; width: 39px; height: 39px; place-items: center; border: 1px solid #ffffff1a; border-radius: 12px; color: #9cafff; background: #657df025; }
-.brand-mark .icon { width: 21px; height: 21px; }
+.brand-mark { display: grid; width: 39px; height: 39px; flex: 0 0 auto; overflow: hidden; place-items: center; border: 1px solid #ffffff1a; border-radius: 50%; background: #fff; }
+.brand-mark img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .brand-copy, .profile-copy { display: flex; flex-direction: column; min-width: 0; }
-.brand-name { font-family: Manrope, sans-serif; font-size: 15px; font-weight: 500; letter-spacing: -.3px; }
+.brand-name { font-family: Manrope, sans-serif; font-size: 10px; font-weight: 800; letter-spacing: .3px; white-space: nowrap; }
 .brand-name strong { font-weight: 800; }
-.brand-caption { margin-top: 2px; color: #8996ae; font-size: 10px; letter-spacing: .35px; }
+.brand-caption { margin-top: 4px; color: #8996ae; font-size: 9px; letter-spacing: .2px; white-space: nowrap; }
 .sidebar-divider { height: 1px; margin: 26px 4px 23px; background: #ffffff12; }
 .nav-label { margin: 0 10px 11px; color: #707f99; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; }
 .nav-label-spaced { margin-top: 30px; }
