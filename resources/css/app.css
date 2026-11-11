@@ -335,6 +335,12 @@ button { color: inherit; }
 .table-delete:hover { color: #8a2f2c; text-decoration: underline; }
 .table-actions { display: flex; align-items: center; gap: 9px; }
 .table-actions form { display: inline; }
+.table-action-icon { display: grid; width: 28px; height: 28px; flex: 0 0 auto; place-items: center; padding: 0; border: 1px solid transparent; border-radius: 7px; color: #64728a; background: transparent; cursor: pointer; transition: color .16s ease, background .16s ease, border-color .16s ease; }
+.table-action-icon .icon { width: 15px; height: 15px; }
+.table-action-icon:hover { border-color: #e6eaf2; color: #4e67c8; background: #f3f5fc; }
+.table-action-icon.is-danger { color: #a45b59; }
+.table-action-icon.is-danger:hover { border-color: #f0dfde; color: #a53d39; background: #fff5f4; }
+.table-action-icon:focus-visible { outline: 2px solid #8092e8; outline-offset: 2px; }
 .muted-text { color: #9ba5b3; }
 .empty-state { padding: 32px 16px !important; color: #8995a7 !important; text-align: center; }
 .table-pagination { padding: 13px 15px; border-top: 1px solid #edf0f4; font-size: 10px; }

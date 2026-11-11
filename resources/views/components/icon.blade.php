@@ -41,5 +41,16 @@
         @case('check')
             <path d="m5 12 4 4L19 6"/>
             @break
+        @case('pdf')
+            <path d="M6 2.75h8l4.25 4.5v13A1.75 1.75 0 0 1 16.5 22h-10A1.75 1.75 0 0 1 4.75 20.25v-15A2.5 2.5 0 0 1 7.25 2.75Z"/>
+            <path d="M14 3v5h4"/>
+            <text x="12" y="16.5" text-anchor="middle" fill="#d94b4b" stroke="none" font-family="Arial, sans-serif" font-size="5.2" font-weight="700">PDF</text>
+            @break
+        @case('edit')
+            <path d="m15 5 4 4"/><path d="M4 20h4l11-11a2.8 2.8 0 0 0-4-4L4 16v4Z"/>
+            @break
+        @case('trash')
+            <path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="m19 6-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/>
+            @break
     @endswitch
 </svg>

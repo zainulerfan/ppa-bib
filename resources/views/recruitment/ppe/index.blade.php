@@ -27,8 +27,10 @@
                         <td>{{ $item->ear_plug ?: '—' }}</td><td>{{ $item->gloves ?: '—' }}</td><td>{{ $item->mask ?: '—' }}</td>
                         <td>{{ $item->preparation_date?->format('d/m/Y') ?: '—' }}</td><td>{{ $item->nrp ?: '—' }}</td><td>{{ $item->note ?: '—' }}</td>
                         <td><span class="table-badge">{{ $item->process_status }}</span></td>
-                        <td><div class="table-actions"><a class="table-link" href="{{ route('recruitment.print', ['type' => 'apd', 'record' => $item->id]) }}">Cetak</a><a class="table-link" href="{{ route('recruitment.ppe.edit', $item) }}">Ubah</a>
-                            <form action="{{ route('recruitment.ppe.destroy', $item) }}" method="POST" onsubmit="return confirm('Hapus data APD ini?')">@csrf @method('DELETE')<button class="table-delete" type="submit">Hapus</button></form>
+                        <td><div class="table-actions">
+                            <a class="table-action-icon" href="{{ route('recruitment.print', ['type' => 'apd', 'record' => $item->id]) }}" aria-label="Cetak APD {{ $item->name }}" title="Cetak"><x-icon name="pdf" /></a>
+                            <a class="table-action-icon" href="{{ route('recruitment.ppe.edit', $item) }}" aria-label="Ubah APD {{ $item->name }}" title="Ubah"><x-icon name="edit" /></a>
+                            <form action="{{ route('recruitment.ppe.destroy', $item) }}" method="POST" onsubmit="return confirm('Hapus data APD ini?')">@csrf @method('DELETE')<button class="table-action-icon is-danger" type="submit" aria-label="Hapus APD {{ $item->name }}" title="Hapus"><x-icon name="trash" /></button></form>
                         </div></td>
                     </tr>
                 @empty

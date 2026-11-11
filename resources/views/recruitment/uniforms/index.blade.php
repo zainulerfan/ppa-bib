@@ -22,8 +22,10 @@
                 @forelse($requests as $index => $item)
                     <tr><td>{{ $requests->firstItem() + $index }}</td><td>{{ $item->created_date?->format('d/m/Y') ?: '—' }}</td><td>{{ $item->finger_number ?: '—' }}</td>
                         <td><strong>{{ $item->name }}</strong></td><td>{{ $item->department ?: '—' }}</td><td>{{ $item->position ?: '—' }}</td><td>{{ $item->uniform_color ?: '—' }}</td><td>{{ $item->uniform_size ?: '—' }}</td><td>{{ $item->note ?: '—' }}</td><td>{{ $item->request_date?->format('d/m/Y') ?: '—' }}</td><td>{{ $item->pickup_quantity }}</td>
-                        <td><div class="table-actions"><a class="table-link" href="{{ route('recruitment.print', ['type' => 'seragam', 'record' => $item->id]) }}">Cetak</a><a class="table-link" href="{{ route('recruitment.uniforms.edit', $item) }}">Ubah</a>
-                            <form action="{{ route('recruitment.uniforms.destroy', $item) }}" method="POST" onsubmit="return confirm('Hapus data seragam ini?')">@csrf @method('DELETE')<button class="table-delete" type="submit">Hapus</button></form>
+                        <td><div class="table-actions">
+                            <a class="table-action-icon" href="{{ route('recruitment.print', ['type' => 'seragam', 'record' => $item->id]) }}" aria-label="Cetak seragam {{ $item->name }}" title="Cetak"><x-icon name="pdf" /></a>
+                            <a class="table-action-icon" href="{{ route('recruitment.uniforms.edit', $item) }}" aria-label="Ubah seragam {{ $item->name }}" title="Ubah"><x-icon name="edit" /></a>
+                            <form action="{{ route('recruitment.uniforms.destroy', $item) }}" method="POST" onsubmit="return confirm('Hapus data seragam ini?')">@csrf @method('DELETE')<button class="table-action-icon is-danger" type="submit" aria-label="Hapus seragam {{ $item->name }}" title="Hapus"><x-icon name="trash" /></button></form>
                         </div></td>
                     </tr>
                 @empty

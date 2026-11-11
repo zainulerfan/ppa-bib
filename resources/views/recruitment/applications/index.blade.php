@@ -22,13 +22,14 @@
         <div class="table-card-heading"><div><strong>Data pengajuan</strong><span>{{ $applications->total() }} data tersimpan</span></div></div>
         <div class="table-scroll">
             <table class="data-table">
-                <thead><tr><th>No</th><th>No urut / surat</th><th>Nama &amp; NIK</th><th>Posisi</th><th>Departemen</th><th>Pengajuan</th><th>Tanggal</th><th>Lampiran</th><th>Aksi</th></tr></thead>
+                <thead><tr><th>No</th><th>No urut / surat</th><th>Nama</th><th>NIK</th><th>Posisi</th><th>Departemen</th><th>Pengajuan</th><th>Tanggal</th><th>Lampiran</th><th>Aksi</th></tr></thead>
                 <tbody>
                     @forelse($applications as $index => $application)
                         <tr>
                             <td>{{ $applications->firstItem() + $index }}</td>
                             <td>{{ $application->sequence_number ?: '—' }}<small>{{ $application->letter_number ?: '—' }}</small></td>
-                            <td><strong>{{ $application->name }}</strong><small>{{ $application->nik ?: 'NIK belum diisi' }}</small></td>
+                            <td><strong>{{ $application->name }}</strong></td>
+                            <td>{{ $application->nik ?: '—' }}</td>
                             <td>{{ $application->position }}</td>
                             <td>{{ $application->department }}</td>
                             <td><span class="table-badge">{{ $application->application_type }}</span></td>
@@ -50,17 +51,23 @@
                                     default => null,
                                 })
                                 @if($printType)
-                                    <a class="table-link" href="{{ route('recruitment.print', ['type' => $printType, 'record' => $application->id]) }}">Cetak</a>
+                                    <a class="table-action-icon" href="{{ route('recruitment.print', ['type' => $printType, 'record' => $application->id]) }}" aria-label="Cetak pengajuan {{ $application->name }}" title="Cetak">
+                                        <x-icon name="pdf" />
+                                    </a>
                                 @endif
-                                <a class="table-link" href="{{ route('recruitment.applications.edit', $application) }}">Ubah</a>
+                                <a class="table-action-icon" href="{{ route('recruitment.applications.edit', $application) }}" aria-label="Ubah pengajuan {{ $application->name }}" title="Ubah">
+                                    <x-icon name="edit" />
+                                </a>
                                 <form action="{{ route('recruitment.applications.destroy', $application) }}" method="POST" onsubmit="return confirm('Hapus data pengajuan ini?')">
                                     @csrf @method('DELETE')
-                                    <button class="table-delete" type="submit">Hapus</button>
+                                    <button class="table-action-icon is-danger" type="submit" aria-label="Hapus pengajuan {{ $application->name }}" title="Hapus">
+                                        <x-icon name="trash" />
+                                    </button>
                                 </form>
                             </div></td>
                         </tr>
                     @empty
-                        <tr><td class="empty-state" colspan="9">Belum ada data pengajuan. Pilih “Tambah pengajuan” untuk memulai.</td></tr>
+                        <tr><td class="empty-state" colspan="10">Belum ada data pengajuan. Pilih “Tambah pengajuan” untuk memulai.</td></tr>
                     @endforelse
                 </tbody>
             </table>

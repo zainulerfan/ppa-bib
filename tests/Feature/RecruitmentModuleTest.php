@@ -77,7 +77,13 @@ class RecruitmentModuleTest extends TestCase
 
         $this->get(route('recruitment.applications.index'))
             ->assertOk()
-            ->assertSee('Karyawan Baru');
+            ->assertSee('Karyawan Baru')
+            ->assertSee('<th>Nama</th>', false)
+            ->assertSee('<th>NIK</th>', false)
+            ->assertSee('<td>31710001</td>', false)
+            ->assertSee('aria-label="Cetak pengajuan Karyawan Baru"', false)
+            ->assertSee('aria-label="Ubah pengajuan Karyawan Baru"', false)
+            ->assertSee('aria-label="Hapus pengajuan Karyawan Baru"', false);
         $this->get(route('recruitment.print', ['type' => 'visitor-im', 'record' => $application->id]))
             ->assertOk()
             ->assertSee('HC/IM/001');
@@ -123,6 +129,11 @@ class RecruitmentModuleTest extends TestCase
             'shoes' => '42',
             'process_status' => 'Dalam proses',
         ]);
+        $this->get(route('recruitment.ppe.index'))
+            ->assertOk()
+            ->assertSee('aria-label="Cetak APD Karyawan Baru"', false)
+            ->assertSee('aria-label="Ubah APD Karyawan Baru"', false)
+            ->assertSee('aria-label="Hapus APD Karyawan Baru"', false);
 
         $this->post(route('recruitment.uniforms.store'), [
             'finger_number' => '31710001',
@@ -139,6 +150,11 @@ class RecruitmentModuleTest extends TestCase
             'name' => 'Karyawan Baru',
             'pickup_quantity' => 2,
         ]);
+        $this->get(route('recruitment.uniforms.index'))
+            ->assertOk()
+            ->assertSee('aria-label="Cetak seragam Karyawan Baru"', false)
+            ->assertSee('aria-label="Ubah seragam Karyawan Baru"', false)
+            ->assertSee('aria-label="Hapus seragam Karyawan Baru"', false);
     }
 
     public function test_print_templates_render_for_each_requested_document_type(): void
