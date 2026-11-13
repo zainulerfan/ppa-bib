@@ -118,3 +118,4 @@ class InternshipApplication extends Model
         });
     }
 }
+

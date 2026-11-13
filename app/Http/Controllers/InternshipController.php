@@ -291,3 +291,4 @@ class InternshipController extends Controller
             ->with('status', 'Data peserta magang berhasil dihapus.');
     }
 }
+

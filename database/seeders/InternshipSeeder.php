@@ -101,3 +101,4 @@ class InternshipSeeder extends Seeder
         }
     }
 }
+
