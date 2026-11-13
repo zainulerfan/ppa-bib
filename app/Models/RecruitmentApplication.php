@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class RecruitmentApplication extends Model
 {
@@ -30,5 +32,25 @@ class RecruitmentApplication extends Model
             'application_date' => 'date',
             'test_date' => 'date',
         ];
+    }
+
+    public function ppeRequests(): HasMany
+    {
+        return $this->hasMany(RecruitmentPpeRequest::class);
+    }
+
+    public function uniformRequests(): HasMany
+    {
+        return $this->hasMany(RecruitmentUniformRequest::class);
+    }
+
+    public function latestPpeRequest(): HasOne
+    {
+        return $this->hasOne(RecruitmentPpeRequest::class)->latestOfMany();
+    }
+
+    public function latestUniformRequest(): HasOne
+    {
+        return $this->hasOne(RecruitmentUniformRequest::class)->latestOfMany();
     }
 }

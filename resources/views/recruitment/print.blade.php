@@ -52,7 +52,12 @@
 
     <div class="print-toolbar">
         <a class="button button-secondary" href="{{ route('recruitment.letters') }}">Kembali</a>
-        <button class="button button-primary" type="button" onclick="window.print()">Cetak / Simpan PDF</button>
+        <a class="button button-secondary" href="{{ route('recruitment.print.pdf', ['type' => $type, 'record' => $record?->id]) }}" target="_blank">
+            <x-icon name="pdf" /> Unduh File PDF
+        </a>
+        <button class="button button-primary" type="button" onclick="window.print()">
+            Cetak Browser
+        </button>
     </div>
     <article class="print-sheet">
         <header class="print-header">

@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class RecruitmentUniformRequest extends Model
 {
     protected $fillable = [
+        'recruitment_application_id',
         'created_date',
         'finger_number',
         'name',
@@ -26,5 +28,10 @@ class RecruitmentUniformRequest extends Model
             'request_date' => 'date',
             'pickup_quantity' => 'integer',
         ];
+    }
+
+    public function application(): BelongsTo
+    {
+        return $this->belongsTo(RecruitmentApplication::class, 'recruitment_application_id');
     }
 }

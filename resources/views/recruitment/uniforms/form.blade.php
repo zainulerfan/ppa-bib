@@ -16,6 +16,17 @@
         <section class="form-section">
             <div class="form-section-heading"><span>01</span><div><h2>Informasi kebutuhan seragam</h2><p>Lengkapi identitas karyawan dan spesifikasi seragam.</p></div></div>
             <div class="form-grid">
+                <label class="form-field form-field-wide">
+                    <span>Tautkan Pengajuan Kandidat (Opsional)</span>
+                    <select name="recruitment_application_id">
+                        <option value="">-- Tanpa Tautan Pengajuan (Standalone) --</option>
+                        @foreach($applications as $app)
+                            <option value="{{ $app->id }}" @selected(old('recruitment_application_id', $uniformRequest->recruitment_application_id) == $app->id)>
+                                {{ $app->name }} (NIK: {{ $app->nik ?: '—' }}, Posisi: {{ $app->position }}, Dept: {{ $app->department }})
+                            </option>
+                        @endforeach
+                    </select>
+                </label>
                 <label class="form-field"><span>Tanggal dibuat</span><input type="date" name="created_date" value="{{ old('created_date', $uniformRequest->created_date?->format('Y-m-d')) }}"></label>
                 <label class="form-field"><span>No finger / NIK</span><input name="finger_number" value="{{ old('finger_number', $uniformRequest->finger_number) }}" maxlength="100"></label>
                 <label class="form-field"><span>Nama <b>*</b></span><input name="name" value="{{ old('name', $uniformRequest->name) }}" maxlength="255" required></label>

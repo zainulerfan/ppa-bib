@@ -4,19 +4,119 @@ namespace App\Http\Controllers\Recruitment;
 
 use App\Http\Controllers\Controller;
 use App\Models\RecruitmentApplication;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class RecruitmentApplicationController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $query = $this->filteredQuery($request)
+            ->withCount(['ppeRequests', 'uniformRequests']);
+
         return view('recruitment.applications.index', [
-            'applications' => RecruitmentApplication::latest()->paginate(15),
+            'applications' => $query->paginate(15)->withQueryString(),
+            'filters' => $request->only(['search', 'position', 'department', 'application_type']),
         ]);
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        $query = $this->filteredQuery($request)
+            ->withCount(['ppeRequests', 'uniformRequests']);
+
+        $filename = 'rekap-pengajuan-rekrutmen-'.now()->format('Y-m-d_His').'.csv';
+
+        return response()->streamDownload(function () use ($query) {
+            $handle = fopen('php://output', 'w');
+            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            fputcsv($handle, [
+                'No',
+                'No Urut',
+                'No Surat',
+                'No Surat Tambahan',
+                'Nama Kandidat',
+                'NIK',
+                'Jenis Kelamin',
+                'Posisi',
+                'Departemen',
+                'Jenis Pengajuan',
+                'Tanggal Pengajuan',
+                'Tanggal Tes',
+                'No HP',
+                'Keterangan Kandidat',
+                'Catatan Penugasan',
+                'Lampiran Izin Visitor',
+                'Jumlah Request APD',
+                'Jumlah Request Seragam',
+                'Tanggal Dibuat',
+            ]);
+
+            $index = 1;
+            $query->chunk(200, function ($applications) use ($handle, &$index) {
+                foreach ($applications as $app) {
+                    fputcsv($handle, [
+                        $index++,
+                        $app->sequence_number,
+                        $app->letter_number,
+                        $app->secondary_letter_number,
+                        $app->name,
+                        $app->nik ? "'".$app->nik : '',
+                        $app->gender,
+                        $app->position,
+                        $app->department,
+                        $app->application_type,
+                        $app->application_date?->format('d/m/Y') ?? '',
+                        $app->test_date?->format('d/m/Y') ?? '',
+                        $app->phone_number ? "'".$app->phone_number : '',
+                        $app->candidate_note,
+                        $app->assignment_note,
+                        $app->visitor_permit_path ? 'Ada' : 'Tidak Ada',
+                        $app->ppe_requests_count,
+                        $app->uniform_requests_count,
+                        $app->created_at?->format('d/m/Y H:i') ?? '',
+                    ]);
+                }
+            });
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    private function filteredQuery(Request $request): Builder
+    {
+        $query = RecruitmentApplication::query()->latest();
+
+        if ($search = trim((string) $request->input('search'))) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('nik', 'like', "%{$search}%")
+                    ->orWhere('letter_number', 'like', "%{$search}%")
+                    ->orWhere('secondary_letter_number', 'like', "%{$search}%");
+            });
+        }
+
+        if ($position = $request->input('position')) {
+            $query->where('position', $position);
+        }
+
+        if ($department = $request->input('department')) {
+            $query->where('department', $department);
+        }
+
+        if ($type = $request->input('application_type')) {
+            $query->where('application_type', $type);
+        }
+
+        return $query;
     }
 
     public function create(): View

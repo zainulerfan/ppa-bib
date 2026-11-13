@@ -22,21 +22,33 @@ Route::middleware('auth')->prefix('recruitment')->name('recruitment.')->group(fu
 
     Route::get('/surat-rekrutmen/pengajuan/{application}/izin-visitor', [RecruitmentDocumentController::class, 'downloadPermit'])
         ->name('applications.permit');
+    Route::get('/surat-rekrutmen/pengajuan/export', [RecruitmentApplicationController::class, 'export'])
+        ->name('applications.export');
     Route::resource('/surat-rekrutmen/pengajuan', RecruitmentApplicationController::class)
         ->except('show')
         ->names('applications')
         ->parameters(['pengajuan' => 'application']);
+
+    Route::get('/surat-rekrutmen/input-apd/export', [RecruitmentPpeController::class, 'export'])
+        ->name('ppe.export');
     Route::resource('/surat-rekrutmen/input-apd', RecruitmentPpeController::class)
         ->except('show')
         ->names('ppe')
         ->parameters(['input-apd' => 'ppeRequest']);
+
+    Route::get('/surat-rekrutmen/input-seragam/export', [RecruitmentUniformController::class, 'export'])
+        ->name('uniforms.export');
     Route::resource('/surat-rekrutmen/input-seragam', RecruitmentUniformController::class)
         ->except('show')
         ->names('uniforms')
         ->parameters(['input-seragam' => 'uniformRequest']);
+
     Route::get('/surat-rekrutmen/print/{type}/{record?}', [RecruitmentDocumentController::class, 'show'])
         ->where('record', '[0-9]+')
         ->name('print');
+    Route::get('/surat-rekrutmen/print/{type}/{record?}/pdf', [RecruitmentDocumentController::class, 'downloadPdf'])
+        ->where('record', '[0-9]+')
+        ->name('print.pdf');
 });
 
 Route::view('/people-development', 'divisions.show', [

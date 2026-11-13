@@ -170,4 +170,166 @@ class RecruitmentModuleTest extends TestCase
         $this->get(route('recruitment.print', ['type' => 'unknown']))
             ->assertNotFound();
     }
+
+    public function test_ppe_and_uniform_requests_can_be_linked_to_recruitment_application(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $application = RecruitmentApplication::create([
+            'name' => 'Budi Santoso',
+            'position' => 'OPERATOR',
+            'department' => 'PRODUKSI',
+            'gender' => 'Laki-laki',
+            'application_type' => 'INDUKSI',
+            'nik' => '6472010101900001',
+        ]);
+
+        $this->post(route('recruitment.ppe.store'), [
+            'recruitment_application_id' => $application->id,
+            'name' => 'Budi Santoso',
+            'position' => 'OPERATOR',
+            'shoes' => '41',
+            'process_status' => 'Dalam proses',
+        ])->assertRedirect(route('recruitment.ppe.index'));
+
+        $this->assertDatabaseHas('recruitment_ppe_requests', [
+            'recruitment_application_id' => $application->id,
+            'name' => 'Budi Santoso',
+        ]);
+
+        $this->post(route('recruitment.uniforms.store'), [
+            'recruitment_application_id' => $application->id,
+            'name' => 'Budi Santoso',
+            'department' => 'PRODUKSI',
+            'position' => 'OPERATOR',
+            'pickup_quantity' => 1,
+        ])->assertRedirect(route('recruitment.uniforms.index'));
+
+        $this->assertDatabaseHas('recruitment_uniform_requests', [
+            'recruitment_application_id' => $application->id,
+            'name' => 'Budi Santoso',
+        ]);
+
+        $this->assertCount(1, $application->fresh()->ppeRequests);
+        $this->assertCount(1, $application->fresh()->uniformRequests);
+    }
+
+    public function test_applications_filter_and_search_by_keyword_and_position(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        RecruitmentApplication::create([
+            'name' => 'Ahmad Dani',
+            'position' => 'OPERATOR',
+            'department' => 'PRODUKSI',
+            'gender' => 'Laki-laki',
+            'application_type' => 'INDUKSI',
+            'nik' => '1111222233334444',
+        ]);
+
+        RecruitmentApplication::create([
+            'name' => 'Siti Aminah',
+            'position' => 'MECHANIC',
+            'department' => 'PLANT',
+            'gender' => 'Perempuan',
+            'application_type' => 'TES PRAKTEK',
+            'nik' => '5555666677778888',
+        ]);
+
+        $this->get(route('recruitment.applications.index', ['search' => 'Ahmad']))
+            ->assertOk()
+            ->assertSee('Ahmad Dani')
+            ->assertDontSee('Siti Aminah');
+
+        $this->get(route('recruitment.applications.index', ['position' => 'MECHANIC']))
+            ->assertOk()
+            ->assertSee('Siti Aminah')
+            ->assertDontSee('Ahmad Dani');
+    }
+
+    public function test_authenticated_user_can_export_applications_with_active_filters(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        RecruitmentApplication::create([
+            'name' => 'Kandidat Diekspor',
+            'position' => 'OPERATOR',
+            'department' => 'PRODUKSI',
+            'gender' => 'Laki-laki',
+            'application_type' => 'INDUKSI',
+            'nik' => '9999000011112222',
+        ]);
+
+        RecruitmentApplication::create([
+            'name' => 'Kandidat Lain',
+            'position' => 'MECHANIC',
+            'department' => 'PLANT',
+            'gender' => 'Laki-laki',
+            'application_type' => 'RO',
+            'nik' => '8888000011112222',
+        ]);
+
+        $response = $this->get(route('recruitment.applications.export', ['position' => 'OPERATOR']));
+
+        $response->assertOk();
+        $this->assertStringContainsString('text/csv', (string) $response->headers->get('content-type'));
+        $this->assertStringContainsString('attachment', (string) $response->headers->get('content-disposition'));
+
+        $content = $response->streamedContent();
+        $this->assertStringContainsString('Kandidat Diekspor', $content);
+        $this->assertStringNotContainsString('Kandidat Lain', $content);
+    }
+
+    public function test_authenticated_user_can_export_ppe_and_uniform_requests(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $this->post(route('recruitment.ppe.store'), [
+            'name' => 'Penerima APD',
+            'position' => 'OPERATOR',
+            'shoes' => '42',
+            'process_status' => 'Dalam proses',
+        ]);
+
+        $this->post(route('recruitment.uniforms.store'), [
+            'name' => 'Penerima Seragam',
+            'department' => 'PRODUKSI',
+            'position' => 'OPERATOR',
+            'pickup_quantity' => 2,
+        ]);
+
+        $responsePpe = $this->get(route('recruitment.ppe.export', ['search' => 'Penerima']));
+        $responsePpe->assertOk();
+        $this->assertStringContainsString('text/csv', (string) $responsePpe->headers->get('content-type'));
+        $this->assertStringContainsString('Penerima APD', $responsePpe->streamedContent());
+
+        $responseUniform = $this->get(route('recruitment.uniforms.export', ['department' => 'PRODUKSI']));
+        $responseUniform->assertOk();
+        $this->assertStringContainsString('text/csv', (string) $responseUniform->headers->get('content-type'));
+        $this->assertStringContainsString('Penerima Seragam', $responseUniform->streamedContent());
+    }
+
+    public function test_authenticated_user_can_download_server_generated_pdf_document(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $application = RecruitmentApplication::create([
+            'name' => 'Kandidat Uji PDF',
+            'position' => 'OPERATOR',
+            'department' => 'PRODUKSI',
+            'gender' => 'Laki-laki',
+            'application_type' => 'IM',
+            'letter_number' => 'DOC/REC/BIB/2026/001',
+        ]);
+
+        $response = $this->get(route('recruitment.print.pdf', [
+            'type' => 'visitor-im',
+            'record' => $application->id,
+        ]));
+
+        $response->assertOk();
+        $this->assertStringContainsString('application/pdf', (string) $response->headers->get('content-type'));
+        $this->assertStringContainsString('attachment', (string) $response->headers->get('content-disposition'));
+        $this->assertStringContainsString('dokumen-visitor-im-'.$application->id.'.pdf', (string) $response->headers->get('content-disposition'));
+    }
 }
