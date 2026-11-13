@@ -52,6 +52,20 @@
                         </div>
                     </div>
                 @endif
+                <a class="nav-link {{ request()->routeIs('internships.*') ? 'is-active' : '' }}" href="{{ route('internships.index') }}" @if(request()->routeIs('internships.*')) aria-current="page" @endif>
+                    <x-icon name="graduation" />
+                    <span>Web Magang (Internship)</span>
+                    <x-icon name="chevron" class="nav-chevron {{ request()->routeIs('internships.*') ? 'is-expanded' : '' }}" />
+                </a>
+                @if(request()->routeIs('internships.*'))
+                    <div class="nav-submenu">
+                        <a class="nav-submenu-parent {{ request()->routeIs('internships.index') ? 'is-current' : '' }}" href="{{ route('internships.index') }}">Pipeline &amp; Kanban</a>
+                        <div class="nav-submenu-children">
+                            <a class="{{ request()->routeIs('internships.create') ? 'is-current' : '' }}" href="{{ route('internships.create') }}">+ Tambah Peserta</a>
+                            <a href="{{ route('internships.spdk.template') }}" target="_blank">Unduh Format SPDK</a>
+                        </div>
+                    </div>
+                @endif
                 <a class="nav-link {{ request()->routeIs('people-development') ? 'is-active' : '' }}" href="{{ route('people-development') }}" @if(request()->routeIs('people-development')) aria-current="page" @endif>
                     <x-icon name="graduation" />
                     <span>People Development</span>

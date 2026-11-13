@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\InternshipController;
 use App\Http\Controllers\Recruitment\RecruitmentApplicationController;
 use App\Http\Controllers\Recruitment\RecruitmentDocumentController;
 use App\Http\Controllers\Recruitment\RecruitmentPpeController;
@@ -49,6 +50,13 @@ Route::middleware('auth')->prefix('recruitment')->name('recruitment.')->group(fu
     Route::get('/surat-rekrutmen/print/{type}/{record?}/pdf', [RecruitmentDocumentController::class, 'downloadPdf'])
         ->where('record', '[0-9]+')
         ->name('print.pdf');
+});
+
+Route::middleware('auth')->prefix('internships')->name('internships.')->group(function () {
+    Route::get('/spdk-template', [InternshipController::class, 'downloadSpdkTemplate'])->name('spdk.template');
+    Route::get('/{internship}/document/{type}', [InternshipController::class, 'downloadDocument'])->name('document.download');
+    Route::put('/{internship}/stage/{stage}', [InternshipController::class, 'updateStage'])->name('stage.update');
+    Route::resource('/', InternshipController::class)->parameters(['' => 'internship']);
 });
 
 Route::view('/people-development', 'divisions.show', [
